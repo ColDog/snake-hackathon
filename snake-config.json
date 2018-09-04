@@ -6,6 +6,14 @@
     {
       "name": "Snake 1",
       "url": "http://localhost:8080"
+    },
+    {
+      "name": "foundasnek",
+      "url": "https://found-a-snake.herokuapp.com/"
+    },
+    {
+      "name": "jsnek",
+      "url": "https://jsnek.herokuapp.com/"
     }
   ]
 }

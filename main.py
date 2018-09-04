@@ -55,6 +55,20 @@ def is_safe(board, coord):
     return board[coord[0]][coord[1]] != "snake"
 
 
+def is_dead(snake, board):
+    if snake["health"] == 0:
+        return True
+    for coord in snake["body"]:
+        if coord["x"] < 0:
+            return True
+        elif coord["y"] < 0:
+            return True
+        elif coord["x"] >= len(board):
+            return True
+        elif coord["y"] >= len(board[0]):
+            return True
+
+
 def do_move(state):
     width = state["board"]["width"]
     height = state["board"]["height"]
@@ -64,6 +78,8 @@ def do_move(state):
         board[coord["x"]][coord["y"]] = "food"
 
     for snake in state["board"]["snakes"]:
+        if is_dead(snake, board):
+            continue
         for coord in snake["body"]:
             board[coord["x"]][coord["y"]] = "snake"
 
