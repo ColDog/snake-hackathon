@@ -10,25 +10,27 @@ def distance(coordA, coordB):
     y = coordA[1] - coordB[1]
     return abs(x) + abs(y)
 
+
 def closest_food(state, head):
     """
     returns coords to the nearest food, or None if there is ... none
     """
     foods = state["board"]["food"]
-    if not len(foods): 
+    if not len(foods):
         return None
-    
+
     closest = None
     for food in state["board"]["food"]:
-        food_coord = (food['x'], food['y'])
+        food_coord = (food["x"], food["y"])
         if closest is None:
             closest = food_coord
             continue
-        
+
         if distance(food_coord, head) < distance(closest, head):
             closest = food_coord
             continue
     return closest
+
 
 def next_coord(coord, board, move):
     if move == "up":
@@ -40,17 +42,17 @@ def next_coord(coord, board, move):
             return None
         return (coord[0] - 1, coord[1])
     elif move == "right":
-        if coord[0] + 1 > len(board[coord[0]]):
+        if coord[0] + 1 >= len(board[coord[0]]):
             return None
         return (coord[0] + 1, coord[1])
     elif move == "down":
-        if coord[1] + 1 > len(board[coord[0]]):
+        if coord[1] + 1 >= len(board[coord[0]]):
             return None
         return (coord[0], coord[1] + 1)
 
 
 def is_safe(board, coord):
-    return board[coord[0]][coord[1]] is None
+    return board[coord[0]][coord[1]] != "snake"
 
 
 def do_move(state):
@@ -65,31 +67,42 @@ def do_move(state):
         for coord in snake["body"]:
             board[coord["x"]][coord["y"]] = "snake"
 
-    head = state["you"]["body"][0]
-    me = (head["x"], head["y"])
+    head_coord = state["you"]["body"][0]
+    tail_coord = state["you"]["body"][-1]
+    me = (head_coord["x"], head_coord["y"])
+    tail = (tail_coord["x"], tail_coord["y"])
+
+    # Chase food
+    def go_towards(destination):
+        if (destination[0] - me[0]) < 0:
+            target = next_coord(me, board, "left")
+            if target and is_safe(board, target):
+                return "left"
+        if (destination[0] - me[0]) > 0:
+            target = next_coord(me, board, "right")
+            if target and is_safe(board, target):
+                return "right"
+        if (destination[1] - me[1]) < 0:
+            target = next_coord(me, board, "up")
+            if target and is_safe(board, target):
+                return "up"
+        if (destination[1] - me[1]) > 0:
+            target = next_coord(me, board, "down")
+            if target and is_safe(board, target):
+                return "down"
 
     food_to_get = closest_food(state, me)
 
-    # Chase food
-    if (food_to_get[0] - me[0]) < 0:
-        target = next_coord(me, board, 'left')
-        if target and is_safe(board, target):
-            return 'left'
-    if (food_to_get[0] - me[0]) > 0:
-        target = next_coord(me, board, 'right')
-        if target and is_safe(board, target):
-            return 'right'
-    if (food_to_get[1] - me[1]) < 0:
-        target = next_coord(me, board, 'up')
-        if target and is_safe(board, target):
-            return 'up'
-    if (food_to_get[1] - me[1]) > 0:
-        target = next_coord(me, board, 'down')
-        if target and is_safe(board, target):
-            return 'down'
+    if state["you"]["health"] < 20:
+        food_to_get_dir = go_towards(food_to_get)
+        if food_to_get_dir:
+            return food_to_get_dir
 
-    # default
+    tail_dir = go_towards(tail)
+    if tail_dir:
+        return tail_dir
 
+    # Default
     moves = ["up", "down", "left", "right"]
     for move in moves:
         target = next_coord(me, board, move)
@@ -127,4 +140,4 @@ def server_error(e):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8090, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)
