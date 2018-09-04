@@ -5,6 +5,31 @@ import logging
 app = flask.Flask(__name__)
 
 
+def distance(coordA, coordB):
+    x = coordA[0] - coordB[0]
+    y = coordA[1] - coordB[1]
+    return abs(x) + abs(y)
+
+def closest_food(state, head):
+    """
+    returns coords to the nearest food, or None if there is ... none
+    """
+    foods = state["board"]["food"]
+    if not len(foods): 
+        return None
+    
+    closest = None
+    for food in state["board"]["food"]:
+        food_coord = (food['x'], food['y'])
+        if closest is None:
+            closest = food_coord
+            continue
+        
+        if distance(food_coord, head) < distance(closest, head):
+            closest = food_coord
+            continue
+    return closest
+
 def next_coord(coord, board, move):
     if move == "up":
         if coord[1] - 1 < 0:
@@ -42,6 +67,28 @@ def do_move(state):
 
     head = state["you"]["body"][0]
     me = (head["x"], head["y"])
+
+    food_to_get = closest_food(state, me)
+
+    # Chase food
+    if (food_to_get[0] - me[0]) < 0:
+        target = next_coord(me, board, 'left')
+        if target and is_safe(board, target):
+            return 'left'
+    if (food_to_get[0] - me[0]) > 0:
+        target = next_coord(me, board, 'right')
+        if target and is_safe(board, target):
+            return 'right'
+    if (food_to_get[1] - me[1]) < 0:
+        target = next_coord(me, board, 'up')
+        if target and is_safe(board, target):
+            return 'up'
+    if (food_to_get[1] - me[1]) > 0:
+        target = next_coord(me, board, 'down')
+        if target and is_safe(board, target):
+            return 'down'
+
+    # default
 
     moves = ["up", "down", "left", "right"]
     for move in moves:

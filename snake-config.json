@@ -5,7 +5,7 @@
   "snakes": [
     {
       "name": "Snake 1",
-      "url": "http://localhost:8090"
+      "url": "http://localhost:8080"
     }
   ]
 }
