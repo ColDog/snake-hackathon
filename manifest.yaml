@@ -1,0 +1,56 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: snake-VERSION
+  namespace: default
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: snake-VERSION
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snake-VERSION
+  namespace: default
+  labels:
+    app: snake-VERSION
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: snake-VERSION
+  template:
+    metadata:
+      labels:
+        app: snake-VERSION
+    spec:
+      containers:
+      - name: snake
+        image: coldog/snake-hackathon:COMMIT
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 3
+          periodSeconds: 3
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: snake-VERSION
+  namespace: default
+spec:
+  maxReplicas: 20
+  minReplicas: 5
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: snake-VERSION
+  targetCPUUtilizationPercentage: 25
