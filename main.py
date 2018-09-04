@@ -5,19 +5,19 @@ import logging
 app = flask.Flask(__name__)
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    return 'Hello'
+    return "Hello"
 
 
-@app.route('/start', methods=['GET', 'POST'])
+@app.route("/start", methods=["GET", "POST"])
 def start():
-    return 'Hello'
+    return "Hello"
 
 
-@app.route('/move', methods=['GET', 'POST'])
+@app.route("/move", methods=["GET", "POST"])
 def move():
-    return json.dumps({'move': 'up'})
+    return json.dumps({"move": "up"})
 
 @app.route('/')
 def hello():
