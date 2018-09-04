@@ -1,7 +1,7 @@
 {
-  "width": 20,
-  "height": 20,
-  "food": 10,
+  "width": 5,
+  "height": 5,
+  "food": 2,
   "snakes": [
     {
       "name": "Snake 1",

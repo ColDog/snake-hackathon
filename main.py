@@ -1,6 +1,7 @@
 import flask
 import json
 import logging
+import snake
 
 app = flask.Flask(__name__)
 
@@ -17,15 +18,17 @@ def start():
 
 @app.route("/move", methods=["GET", "POST"])
 def move():
+    snake.move(flask.request.json)
     return json.dumps({"move": "up"})
 
-@app.route('/')
+
+@app.route("/")
 def hello():
-    return 'Get out of here John!'
+    return "Get out of here John!"
 
 
 @app.errorhandler(500)
 def server_error(e):
     # Log the error and stacktrace.
-    logging.exception('An error occurred during a request.')
-    return 'An internal error occurred.', 500
+    logging.exception("An error occurred during a request.")
+    return "An internal error occurred.", 500
