@@ -1,7 +1,5 @@
 import flask
 import json
-# import snake
-# import util
 import logging
 
 app = flask.Flask(__name__)
@@ -23,7 +21,7 @@ def move():
 
 @app.route('/')
 def hello():
-    return 'Hello World!'
+    return 'Get out of here John!'
 
 
 @app.errorhandler(500)
