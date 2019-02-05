@@ -1,6 +1,7 @@
 import flask
 import json
 import logging
+import os
 
 app = flask.Flask(__name__)
 
@@ -156,4 +157,5 @@ def server_error(e):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    port = os.environ.get("PORT", "8080")
+    app.run(host="0.0.0.0", port=int(port), debug=True)
